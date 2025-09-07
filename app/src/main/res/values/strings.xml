@@ -1,3 +1,36 @@
 <resources>
     <string name="app_name">PizzaMania</string>
+
+    <string-array name="country_codes">
+        <item>+1</item>
+        <item>+7</item>
+        <item>+20</item>
+        <item>+27</item>
+        <item>+30</item>
+        <item>+31</item>
+        <item>+32</item>
+        <item>+33</item>
+        <item>+34</item>
+        <item>+36</item>
+        <item>+39</item>
+        <item>+40</item>
+        <item>+44</item>
+        <item>+49</item>
+        <item>+52</item>
+        <item>+54</item>
+        <item>+55</item>
+        <item>+61</item>
+        <item>+62</item>
+        <item>+63</item>
+        <item>+64</item>
+        <item>+65</item>
+        <item>+66</item>
+        <item>+81</item>
+        <item>+82</item>
+        <item>+84</item>
+        <item>+86</item>
+        <item>+91</item>
+        <item>+92</item>
+        <item>+94</item>
+    </string-array>
 </resources>
