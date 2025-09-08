@@ -23,7 +23,7 @@ public class SignInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        // Firebase instance
+        // 0 instance
         mAuth = FirebaseAuth.getInstance();
 
         etEmail = findViewById(R.id.etUsername);
