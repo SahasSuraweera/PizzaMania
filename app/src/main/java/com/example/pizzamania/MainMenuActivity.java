@@ -1,4 +1,4 @@
-package com.example.pizzamaniaapplication;
+package com.example.pizzamania;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
@@ -28,9 +28,9 @@ public class MainMenuActivity extends AppCompatActivity {
 
         // Sample menu items with descriptions
         ArrayList<MenuItem> menuItems = new ArrayList<>();
-        menuItems.add(new MenuItem("Margherita Pizza", 1500, R.drawable.margerita_pizza, "Classic cheese and tomato pizza."));
-        menuItems.add(new MenuItem("Pepperoni Pizza", 2000, R.drawable.margerita_pizza, "Loaded with spicy pepperoni slices."));
-        menuItems.add(new MenuItem("Veggie Pizza", 1800, R.drawable.margerita_pizza, "Topped with fresh seasonal vegetables."));
+        menuItems.add(new MenuItem("Margherita Pizza", 1500, R.drawable.homepage, "Classic cheese and tomato pizza."));
+        menuItems.add(new MenuItem("Pepperoni Pizza", 2000, R.drawable.homepage, "Loaded with spicy pepperoni slices."));
+        menuItems.add(new MenuItem("Veggie Pizza", 1800, R.drawable.homepage, "Topped with fresh seasonal vegetables."));
 
         // Dynamically create menu views
         for(MenuItem item : menuItems){
