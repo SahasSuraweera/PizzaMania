@@ -50,8 +50,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:src="@drawable/logo12345678"
+            android:background="#FF5722"
             android:contentDescription="Profile" />
     </LinearLayout>
 
@@ -83,10 +82,9 @@
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="72dp"
         android:layout_marginEnd="16dp"
-        android:src="@drawable/logo12345678"
-        android:background="@drawable/logo12345678"
         android:padding="5dp"
         android:elevation="8dp"
+        android:src="@drawable/ic_cart"
         android:scaleType="centerInside"
         android:clickable="true"
         android:focusable="true"
