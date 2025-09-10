@@ -51,7 +51,6 @@
                 android:src="@drawable/ic_person"
                 android:scaleType="centerCrop"
                 android:layout_gravity="center_horizontal"
-                android:background="@drawable/ic_person"
                 android:layout_marginTop="10dp" />
 
             <Button
@@ -146,7 +145,7 @@
                     android:id="@+id/btnSelectAddress"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_person"
+                    android:src="@drawable/ic_launcher_foreground"
                     android:contentDescription="Pick address"
                     android:padding="8dp"/>
             </LinearLayout>
@@ -194,11 +193,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Already have an account? Sign in"
-                android:textColor="#080706"
-                android:textStyle="bold"
+                android:textColor="#003366"
                 android:textSize="14sp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp" />
+                android:layout_marginTop="10dp"
+                android:onClick="goToSignIn"/>
 
         </LinearLayout>
     </ScrollView>

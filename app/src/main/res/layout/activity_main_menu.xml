@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#FFFFFF"
+    tools:context=".MainMenuActivity">
 
     <!-- Title Bar -->
     <RelativeLayout
@@ -33,6 +35,78 @@
             android:textColor="#FFFFFF"
             android:layout_centerInParent="true" />
 
+        <ImageButton
+            android:id="@+id/btnSignOut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="0dp"
+            app:srcCompat="@drawable/ic_signout"
+            android:backgroundTint="#FF5722" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/userInfo"
+        android:layout_width="match_parent"
+        android:layout_below="@id/titleBar"
+        android:layout_height="100dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="7dp"
+        android:layout_marginBottom="0dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:background="@drawable/border"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <LinearLayout
+            android:id="@+id/userDetailsLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hi John Doe"
+                android:textColor="#000"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvDeliveryLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="123 Main Street, Colombo"
+                android:textColor="#333"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvNearestBranch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nearest Branch: Colombo"
+                android:textColor="#FF5722"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <!-- Edit Button aligned to the right -->
+        <Button
+            android:id="@+id/btnEditUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit"
+            android:textColor="#FFF"
+            android:backgroundTint="#FF5722"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"/>
+
     </RelativeLayout>
 
     <!-- Bottom Navigation -->
@@ -41,27 +115,108 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp"
         android:background="#FF5722"
         android:orientation="horizontal"
         android:gravity="center">
 
         <ImageButton
-            android:id="@+id/menuProfile"
+            android:id="@+id/imageButton4"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:background="#FF5722"
-            android:contentDescription="Profile" />
+            android:backgroundTint="#FF5722"
+            app:srcCompat="@drawable/ic_home" />
+
+        <ImageButton
+            android:id="@+id/imageButton5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#FF5722"
+            app:srcCompat="@drawable/ic_order" />
+
+        <ImageButton
+            android:id="@+id/imageButton6"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#FF5722"
+            app:srcCompat="@drawable/ic_branch" />
+
+        <ImageButton
+            android:id="@+id/imageButton7"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#FF5722"
+            app:srcCompat="@drawable/ic_profile" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomText"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_alignParentBottom="true"
+        android:background="#FF5722"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/textHome"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#FF5722"
+            android:text="Home"
+            android:gravity="center"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/textOrders"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#FF5722"
+            android:text="Orders"
+            android:gravity="center"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/textBranches"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#FF5722"
+            android:text="Branch"
+            android:gravity="center"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/textProfile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#FF5722"
+            android:text="Profile"
+            android:gravity="center"
+            android:textColor="@color/black"/>
+
     </LinearLayout>
 
     <!-- Scrollable Menu Items -->
+
+    <!-- Floating Cart Button -->
     <ScrollView
         android:id="@+id/scrollMenu"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottomMenu"
-        android:layout_below="@id/titleBar"
-        android:padding="8dp">
+        android:layout_below="@id/userInfo"
+        android:layout_marginLeft="7dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="2dp"
+        android:padding="0dp">
 
         <!-- Container for dynamic menu items -->
         <LinearLayout
@@ -73,21 +228,19 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Floating Cart Button -->
-    <ImageView
+    <ImageButton
         android:id="@+id/fabCart"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="72dp"
+        android:layout_alignParentBottom="true"
         android:layout_marginEnd="16dp"
-        android:padding="5dp"
+        android:layout_marginBottom="80dp"
+        android:contentDescription="Cart"
         android:elevation="8dp"
-        android:src="@drawable/ic_cart"
-        android:scaleType="centerInside"
-        android:clickable="true"
         android:focusable="true"
-        android:contentDescription="Cart" />
+        android:padding="0dp"
+        android:background="@drawable/border"
+        android:src="@drawable/ic_cart" />
 
 </RelativeLayout>

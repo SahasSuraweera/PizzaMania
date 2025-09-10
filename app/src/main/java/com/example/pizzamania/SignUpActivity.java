@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -21,26 +22,19 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.widget.Autocomplete;
-import com.google.android.libraries.places.widget.AutocompleteActivity;
-import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
-
-    private static final int AUTOCOMPLETE_REQUEST_CODE = 200;
 
     private EditText etName, etPhone, etEmail, etAddress, etPassword, etConfirmPassword;
     private Spinner spinnerCountryCode;
@@ -49,26 +43,28 @@ public class SignUpActivity extends AppCompatActivity {
 
     private Uri imageUri;
     private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
+    private DatabaseReference dbRef;
 
     private ActivityResultLauncher<Intent> cameraLauncher;
     private ActivityResultLauncher<Intent> galleryLauncher;
+    private ActivityResultLauncher<Intent> mapLauncher;
+
+    private double userLat = 0.0;
+    private double userLng = 0.0;
+
+    private static final int CAMERA_PERMISSION_CODE = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        // Initialize Firebase
+        // Firebase
         mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
+        dbRef = FirebaseDatabase.getInstance("https://pizzamania-d2775-default-rtdb.firebaseio.com/")
+                .getReference("users");
 
-        // Initialize Places SDK
-        if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), "AIzaSyBw0C78mfaDpspwyJtdfm8Ubg5mp3QAiLc");
-        }
-
-        // Initialize views
+        // Views
         etName = findViewById(R.id.etName);
         etPhone = findViewById(R.id.etPhone);
         spinnerCountryCode = findViewById(R.id.spinnerCountryCode);
@@ -81,35 +77,59 @@ public class SignUpActivity extends AppCompatActivity {
         tvUploadPhoto = findViewById(R.id.tvUploadPhoto);
         btnSelectAddress = findViewById(R.id.btnSelectAddress);
 
+        setupLaunchers();
+
         btnRegister.setOnClickListener(v -> registerUser());
         tvUploadPhoto.setOnClickListener(v -> showImagePickerOptions());
-        etAddress.setOnClickListener(v -> openPlacePicker());
-        btnSelectAddress.setOnClickListener(v -> openPlacePicker());
-
-        setupImagePickers();
+        btnSelectAddress.setOnClickListener(v -> openMapPicker());
+        etAddress.setOnClickListener(v -> openMapPicker());
     }
 
-    private void setupImagePickers() {
+    private void setupLaunchers() {
+        // Camera
         cameraLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null &&
+                            result.getData().getExtras() != null) {
                         Bitmap bitmap = (Bitmap) result.getData().getExtras().get("data");
-                        imgProfile.setImageBitmap(bitmap);
+                        if (bitmap != null) {
+                            bitmap = getResizedBitmap(bitmap, 500);
+                            imgProfile.setImageBitmap(bitmap);
+                            imageUri = getImageUriFromBitmap(bitmap);
+                        }
                     }
                 });
 
+        // Gallery
         galleryLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         imageUri = result.getData().getData();
-                        try {
-                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                            imgProfile.setImageBitmap(bitmap);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        if (imageUri != null) {
+                            try {
+                                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                                bitmap = getResizedBitmap(bitmap, 500);
+                                imgProfile.setImageBitmap(bitmap);
+                                imageUri = getImageUriFromBitmap(bitmap);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
+                    }
+                });
+
+        // Map Picker
+        mapLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        Intent data = result.getData();
+                        String address = data.getStringExtra("address");
+                        userLat = data.getDoubleExtra("latitude", 0.0);
+                        userLng = data.getDoubleExtra("longitude", 0.0);
+                        etAddress.setText(address);
                     }
                 });
     }
@@ -124,7 +144,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 == PackageManager.PERMISSION_GRANTED) {
                             openCamera();
                         } else {
-                            requestPermissions(new String[]{Manifest.permission.CAMERA}, 101);
+                            requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
                         }
                     } else {
                         openGallery();
@@ -142,38 +162,24 @@ public class SignUpActivity extends AppCompatActivity {
         galleryLauncher.launch(intent);
     }
 
-    private void openPlacePicker() {
-        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.ADDRESS, Place.Field.LAT_LNG);
-        Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
-                .build(this);
-        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+    private void openMapPicker() {
+        Intent intent = new Intent(this, MapActivity.class);
+        mapLauncher.launch(intent);
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 101 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == CAMERA_PERMISSION_CODE && grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             openCamera();
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Place place = Autocomplete.getPlaceFromIntent(data);
-                etAddress.setText(place.getAddress());
-            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-                Toast.makeText(this, "Error selecting place", Toast.LENGTH_SHORT).show();
-            }
         }
     }
 
     private void registerUser() {
         String name = etName.getText().toString().trim();
-        String phone = spinnerCountryCode.getSelectedItem().toString().split(" ")[0] + etPhone.getText().toString().trim();
+        String phone = (spinnerCountryCode.getSelectedItem() != null ? spinnerCountryCode.getSelectedItem().toString().split(" ")[0] : "") + etPhone.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
         String address = etAddress.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
@@ -189,66 +195,80 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
-        Toast.makeText(this, "Registering user...", Toast.LENGTH_SHORT).show();
-
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                        if (firebaseUser == null) {
-                            Toast.makeText(this, "Error: User not found after signup", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        String uid = firebaseUser.getUid();
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user == null) return;
+                        String uid = user.getUid();
 
                         if (imageUri != null) {
-                            // Upload profile image
-                            FirebaseStorage.getInstance().getReference()
-                                    .child("profile_images")
-                                    .child(uid + ".jpg")
-                                    .putFile(imageUri)
-                                    .addOnSuccessListener(taskSnapshot ->
-                                            taskSnapshot.getStorage().getDownloadUrl()
-                                                    .addOnSuccessListener(uri ->
-                                                            saveUserToFirestore(uid, name, phone, email, address, uri.toString())
-                                                    )
-                                                    .addOnFailureListener(e ->
-                                                            Toast.makeText(this, "Failed to get image URL: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                                                    )
-                                    )
-                                    .addOnFailureListener(e ->
-                                            Toast.makeText(this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                                    );
+                            StorageReference storageRef = FirebaseStorage.getInstance()
+                                    .getReference("profile_images/" + uid + ".jpg");
+                            storageRef.putFile(imageUri)
+                                    .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl()
+                                            .addOnSuccessListener(uri -> saveUserToDB(uid, name, phone, email, address, uri.toString()))
+                                            .addOnFailureListener(e -> Log.e("SignUp", "Download URL failed", e)))
+                                    .addOnFailureListener(e -> Log.e("SignUp", "Image upload failed", e));
                         } else {
-                            saveUserToFirestore(uid, name, phone, email, address, null);
+                            saveUserToDB(uid, name, phone, email, address, null);
                         }
 
                     } else {
-                        Toast.makeText(this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        Log.e("SIGNUP", "Error creating user", task.getException());
+                        Log.e("SignUp", "Auth failed", task.getException());
+                        Toast.makeText(this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
     }
 
-    private void saveUserToFirestore(String uid, String name, String phone, String email, String address, String profileImageUrl) {
-        Map<String, Object> user = new HashMap<>();
-        user.put("fullName", name);
-        user.put("phone", phone);
-        user.put("email", email);
-        user.put("address", address);
-        if (profileImageUrl != null) user.put("profilePhoto", profileImageUrl);
+    private void saveUserToDB(String uid, String name, String phone, String email, String address, String profileUrl) {
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("fullName", name);
+        userMap.put("phone", phone);
+        userMap.put("email", email);
+        userMap.put("address", address);
+        userMap.put("latitude", userLat);
+        userMap.put("longitude", userLng);
+        if (profileUrl != null) userMap.put("profilePhoto", profileUrl);
 
-        db.collection("users").document(uid)
-                .set(user, SetOptions.merge()) // Merge to avoid overwriting
+        dbRef.child(uid).setValue(userMap)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show();
-                    // Redirect to MainActivity
-                    startActivity(new Intent(SignUpActivity.this, MainActivity.class));
+                    startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
                     finish();
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error saving user: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.e("SIGNUP", "Firestore save failed", e);
-                });
+                .addOnFailureListener(e -> Log.e("SignUp", "System Error! Please Try Again Later.", e));
+    }
+
+    private Uri getImageUriFromBitmap(Bitmap bitmap) {
+        try {
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, bytes);
+            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Profile", null);
+            if (path != null) return Uri.parse(path);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float) width / height;
+        if (bitmapRatio > 1) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
+    }
+
+    public void goToSignIn(View view) {
+        Intent intent = new Intent(this, SignInActivity.class);
+        startActivity(intent);
     }
 }

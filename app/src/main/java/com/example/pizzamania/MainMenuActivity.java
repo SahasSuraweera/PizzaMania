@@ -3,12 +3,14 @@ package com.example.pizzamania;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,8 +22,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.ArrayList;
 import java.util.List;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+
 
 public class MainMenuActivity extends AppCompatActivity {
 
@@ -29,8 +33,8 @@ public class MainMenuActivity extends AppCompatActivity {
     LinearLayout menuContainer;
     FirebaseFirestore db;
     FirebaseStorage storage;
-
     ImageView fabCart;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,26 +55,51 @@ public class MainMenuActivity extends AppCompatActivity {
         }
 
         fabCart = findViewById(R.id.fabCart);
+        fabCart.setOnClickListener(v -> {
+            Intent intent = new Intent(MainMenuActivity.this, CartActivity.class);
+            startActivity(intent);
+        });
 
-        fabCart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Open CartActivity
-                Intent intent = new Intent(MainMenuActivity.this, CartActivity.class);
-                startActivity(intent);
-            }
+        ImageButton btnSignOut = findViewById(R.id.btnSignOut);
+
+        btnSignOut.setOnClickListener(v -> {
+            // Create confirmation dialog
+            new AlertDialog.Builder(MainMenuActivity.this)
+                    .setTitle("Sign Out")
+                    .setMessage("Are you sure you want to sign out?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+
+                        SharedPreferences sharedPreferences = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.clear(); // remove email, password, remember flag
+                        editor.apply();
+                        // Log out user
+                        FirebaseAuth.getInstance().signOut();
+
+                        // Go to MainActivity (login or home page)
+                        Intent intent = new Intent(MainMenuActivity.this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .setNegativeButton("No", (dialog, which) -> {
+                        // Dismiss dialog
+                        dialog.dismiss();
+                    })
+                    .show();
         });
     }
 
+    // Load pizzas from Firestore, fallback to SQLite if failed
     private void loadPizzasFromFirestore() {
         db.collection("Pizzas").get().addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
+                    String name = document.getString("name");
+                    String size = document.getString("size");
+                    Double price = document.getDouble("price");
                     String description = document.getString("description");
                     String imageUrl = document.getString("imageUrl");
-                    String name = document.getString("name");
-                    Double price = document.getDouble("price");
-                    String size = document.getString("size");
 
                     if (name != null && size != null && price != null) {
                         Pizza pizza = new Pizza(name, size, price, description, imageUrl);
@@ -89,20 +118,23 @@ public class MainMenuActivity extends AppCompatActivity {
         });
     }
 
+    // Load default pizzas from SQLite (MenuDBHelper)
     private void loadPizzasFromSQLite() {
         MenuDBHelper menuDBHelper = new MenuDBHelper();
-        List<Pizza> defaultPizzas =  menuDBHelper.getDefaultPizzas(6); // Get 6 default pizzas
+        List<Pizza> defaultPizzas = menuDBHelper.getDefaultPizzas(6); // Get 6 default pizzas
         for (Pizza pizza : defaultPizzas) {
             addMenuItemView(pizza);
         }
     }
 
+    // Dynamically create menu item views
     private void addMenuItemView(Pizza pizza) {
         LinearLayout horizontal = new LinearLayout(this);
         horizontal.setOrientation(LinearLayout.HORIZONTAL);
-        horizontal.setPadding(16,16,16,16);
+        horizontal.setPadding(16, 16, 16, 16);
         horizontal.setGravity(Gravity.CENTER_VERTICAL);
 
+        // Details section (name, description, price)
         LinearLayout details = new LinearLayout(this);
         details.setOrientation(LinearLayout.VERTICAL);
         details.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
@@ -125,12 +157,13 @@ public class MainMenuActivity extends AppCompatActivity {
         details.addView(tvDescription);
         details.addView(tvPrice);
 
+        // Image + Select button section
         LinearLayout right = new LinearLayout(this);
         right.setOrientation(LinearLayout.VERTICAL);
         right.setGravity(Gravity.CENTER_HORIZONTAL);
 
         ImageView img = new ImageView(this);
-        img.setLayoutParams(new LinearLayout.LayoutParams(200,200));
+        img.setLayoutParams(new LinearLayout.LayoutParams(200, 200));
 
         if (pizza.getImageUrl() != null && !pizza.getImageUrl().isEmpty()) {
             StorageReference imgRef = storage.getReference().child(pizza.getImageUrl());
@@ -150,9 +183,8 @@ public class MainMenuActivity extends AppCompatActivity {
         btnSelect.setTextColor(Color.WHITE);
 
         boolean[] isSelected = {false};
-
         btnSelect.setOnClickListener(v -> {
-            if(!isSelected[0]){
+            if (!isSelected[0]) {
                 btnSelect.setText("+Selected");
                 btnSelect.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#4CAF50")));
                 dbHelper.addOrUpdateItem(pizza.getName(), pizza.getSize(), pizza.getPrice(), 1);
@@ -173,6 +205,7 @@ public class MainMenuActivity extends AppCompatActivity {
 
         menuContainer.addView(horizontal);
 
+        // Divider
         View divider = new View(this);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 2);

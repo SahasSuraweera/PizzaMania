@@ -1,9 +1,11 @@
 package com.example.pizzamania;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -15,30 +17,35 @@ import com.google.firebase.auth.FirebaseUser;
 public class SignInActivity extends AppCompatActivity {
 
     private EditText etEmail, etPassword;
-    private Button btnLogin; //btnRegister;
+    private Button btnLogin;
+    private CheckBox cbRemember;
     private FirebaseAuth mAuth;
+
+    private SharedPreferences sharedPreferences;
+    private static final String PREFS_NAME = "loginPrefs";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        // 0 instance
         mAuth = FirebaseAuth.getInstance();
+        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
         etEmail = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnSignIn);
-        //btnRegister = findViewById(R.id.btnSignup);
+        cbRemember = findViewById(R.id.cbRemember);
 
-        // Login button click
         btnLogin.setOnClickListener(v -> loginUser());
 
-        // Go to registration screen
-        //btnRegister.setOnClickListener(v -> {
-            //Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);
-            //startActivity(intent);
-        //});
+        // Auto-fill email/password if Remember Me was previously selected
+        boolean remember = sharedPreferences.getBoolean("remember", false);
+        if (remember) {
+            etEmail.setText(sharedPreferences.getString("email", ""));
+            etPassword.setText(sharedPreferences.getString("password", ""));
+            cbRemember.setChecked(true);
+        }
     }
 
     private void loginUser() {
@@ -58,14 +65,22 @@ public class SignInActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
-                        Toast.makeText(SignInActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                        // Save Remember Me preference
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        if (cbRemember.isChecked()) {
+                            editor.putBoolean("remember", true);
+                            editor.putString("email", email);
+                            editor.putString("password", password);
+                        } else {
+                            editor.clear();
+                        }
+                        editor.apply();
 
-                        // Go to Home/Dashboard screen
-                        Intent intent = new Intent(SignInActivity.this, MainMenuActivity.class);
-                        startActivity(intent);
+                        // Go to MainMenuActivity
+                        startActivity(new Intent(SignInActivity.this, MainMenuActivity.class));
                         finish();
                     } else {
-                        Toast.makeText(SignInActivity.this, "Login failed: " + task.getException().getMessage(),
+                        Toast.makeText(SignInActivity.this, "Incorrect Username Or Password! " ,
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
