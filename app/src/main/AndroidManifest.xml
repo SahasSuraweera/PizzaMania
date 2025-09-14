@@ -23,6 +23,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PizzaMania">
         <activity
+            android:name=".UpdateProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OrderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BranchesActivity"
+            android:exported="false" />
+        <activity
             android:name=".MapActivity"
             android:exported="false" />
         <activity
@@ -31,6 +40,7 @@
         <activity
             android:name=".MainMenuActivity"
             android:exported="false" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBw0C78mfaDpspwyJtdfm8Ubg5mp3QAiLc" />
@@ -44,7 +54,6 @@
         <activity
             android:name=".MainActivity"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
