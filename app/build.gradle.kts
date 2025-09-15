@@ -47,6 +47,10 @@ dependencies {
     implementation(libs.firebase.database)
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1") // use kapt instead of annotationProcessor
 
+    implementation("com.github.PayHereDevs:payhere-android-sdk:v3.0.17")
+    implementation("androidx.appcompat:appcompat:1.6.0")
+    implementation("com.google.code.gson:gson:2.8.0")
+
     implementation("com.google.android.gms:play-services-maps:18.1.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
 

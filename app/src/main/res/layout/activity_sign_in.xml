@@ -46,11 +46,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:hint="Enter Phone Number / Email"
+            android:hint="Enter Email"
             android:textStyle="bold"
             android:padding="12dp"
             android:textColor="#080706"
-            android:textColorHint="#FFFFFF"/>
+            android:textColorHint="#707070"/>
 
         <!-- Password Label -->
 
@@ -65,7 +65,7 @@
             android:textStyle="bold"
             android:padding="12dp"
             android:textColor="#080706"
-            android:textColorHint="#FFFFFF"/>
+            android:textColorHint="#707070"/>
 
         <!-- Sign In Button -->
 

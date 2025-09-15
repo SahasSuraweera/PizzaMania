@@ -127,7 +127,7 @@ public class MainMenuActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     String address = snapshot.getValue(String.class);
                     if (address != null) {
-                        tvDeliveryLocation.setText("Delivery Address: " + address);
+                        tvDeliveryLocation.setText("Delivery Address : " + address);
                         deliveryAddress = address;
                     }
                 }
@@ -150,7 +150,7 @@ public class MainMenuActivity extends AppCompatActivity {
                         currentLng = userLng;
                         checkNearestBranch(userLat, userLng);
                     } else {
-                        tvNearestBranch.setText("User coordinates not available");
+                        tvNearestBranch.setText("Home address not available");
                     }
                 }
 
@@ -202,12 +202,12 @@ public class MainMenuActivity extends AppCompatActivity {
         // Only update delivery info if passed from CartActivity
         if (passedDeliveryAddress != null) {
             deliveryAddress = passedDeliveryAddress;
-            tvDeliveryLocation.setText("Delivery Address: " + deliveryAddress);
+            tvDeliveryLocation.setText("Delivery Address : " + deliveryAddress);
         }
 
         if (passedNearestBranch != null) {
             nearestBranch = passedNearestBranch;
-            tvNearestBranch.setText("Nearest branch: " + nearestBranch);
+            tvNearestBranch.setText("Nearest branch : " + nearestBranch);
         }
 
         // Reset cart selections if requested

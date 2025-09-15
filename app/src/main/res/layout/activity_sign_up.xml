@@ -57,7 +57,7 @@
                 android:id="@+id/tvUploadPhoto"
                 android:layout_width="140dp"
                 android:layout_height="40dp"
-                android:text="Upload Photo"
+                android:text="+Add Photo"
                 android:textStyle="bold"
                 android:backgroundTint="#FF5722"
                 android:textColor="#FFFFFF"
@@ -145,7 +145,7 @@
                     android:id="@+id/btnSelectAddress"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_launcher_foreground"
+                    android:src="@drawable/ic_location"
                     android:contentDescription="Pick address"
                     android:padding="8dp"/>
             </LinearLayout>

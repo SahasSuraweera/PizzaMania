@@ -6,12 +6,15 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -36,6 +39,19 @@ public class CartActivity extends AppCompatActivity {
 
     private String userUid, deliveryAddress, nearestBranch, paymentMethod, orderStatus;
     private double latitude, longitude, subtotal, deliveryFee, totalWithDelivery;
+    String orderId = "ORD-" + new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault()).format(new Date());
+
+    private final ActivityResultLauncher<Intent> paymentLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    String status = result.getData().getStringExtra("status");
+                    if ("success".equals(status)) {
+                        saveOrderToFirebase();
+                    } else {
+                        Toast.makeText(this, "Payment Failed!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,11 +79,11 @@ public class CartActivity extends AppCompatActivity {
         // Show delivery info
         TextView tvCheckoutAddress = findViewById(R.id.tvCheckoutAddress);
         TextView tvCheckoutBranch = findViewById(R.id.tvCheckoutBranch);
-        tvCheckoutAddress.setText("Delivery Address: " + deliveryAddress);
-        tvCheckoutBranch.setText("Nearest Branch: " + nearestBranch);
+        tvCheckoutAddress.setText("Delivery Address    : " + deliveryAddress);
+         tvCheckoutBranch.setText("Delivering Branch   : " + nearestBranch);
 
         deliveryFee = calculateDeliveryFee(latitude, longitude, nearestBranchLat, nearestBranchLog);
-        tvDeliveryFee.setText("Delivery Fee (LKR) " + deliveryFee);
+        tvDeliveryFee.setText("Delivery Fee              Rs. " + deliveryFee);
 
         // Payment method
         radioGroupPayment = findViewById(R.id.radioGroupPayment);
@@ -84,22 +100,55 @@ public class CartActivity extends AppCompatActivity {
                 orderStatus = "Pending";
             } else if (checkedId == R.id.radioBtnCard) {
                 paymentMethod = "Card Payment";
-                orderStatus = "Payment Processing";
+                orderStatus = "Pending";
             }
         });
 
         loadCartItems();
 
         // Checkout button
-        btnCheckout.setOnClickListener(v -> new AlertDialog.Builder(this)
-                .setTitle("Confirm Checkout")
-                .setMessage("Are you sure you want to place this order?")
-                .setPositiveButton("Yes", (dialog, which) -> saveOrderToFirebase())
-                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
-                .show());
+        btnCheckout.setOnClickListener(v -> {
+            if (radioBtnCard.isChecked()) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Confirm Checkout")
+                        .setMessage("Order will be placed after payment is successful. Are you sure?")
+                        .setPositiveButton("Yes", (dialog, which) -> {
+                            Intent intent1 = new Intent(CartActivity.this, PaymentActivity.class);
+
+                            intent1.putExtra("orderID", orderId);
+                            intent1.putExtra("totalCharge", updateSubtotal()); // double or int
+                            intent1.putExtra("userEmail", FirebaseAuth.getInstance().getCurrentUser().getEmail());
+
+                            paymentLauncher.launch(intent1);
+                        })
+                        .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                        .show();
+
+            } else if (radioBtnCash.isChecked()) { // Cash on Delivery option
+                new AlertDialog.Builder(this)
+                        .setTitle("Confirm COD Order")
+                        .setMessage("Are you sure you want to place this order with Cash on Delivery?")
+                        .setPositiveButton("Yes", (dialog, which) -> {
+                            saveOrderToFirebase();
+                        })
+                        .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                        .show();
+
+            } else {
+                Toast.makeText(this, "Please select a payment method", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        ImageButton btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> {
+            Intent intent3 = new Intent(CartActivity.this, MainMenuActivity.class);
+            startActivity(intent3);
+            finish();
+        });
     }
 
-    private void loadCartItems() {
+
+        private void loadCartItems() {
         cartContainer.removeAllViews();
         List<CartDBHelper.CartItem> items = dbHelper.getAllItems();
 
@@ -122,7 +171,7 @@ public class CartActivity extends AppCompatActivity {
             // Name
             TextView tvName = new TextView(this);
             tvName.setText(name + " (" + size + ")");
-            tvName.setTextSize(16f);
+            tvName.setTextSize(18f);
             tvName.setTextColor(Color.BLACK);
             LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 4f);
             tvName.setLayoutParams(nameParams);
@@ -130,27 +179,29 @@ public class CartActivity extends AppCompatActivity {
             // Minus button
             Button btnMinus = new Button(this);
             btnMinus.setText("−");
+            btnMinus.setTextSize(16f);
             LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(70, 70);
             btnMinus.setLayoutParams(btnParams);
-
             // Quantity
             TextView tvQty = new TextView(this);
             tvQty.setText(String.valueOf(quantity));
             tvQty.setTextSize(16f);
-            tvQty.setGravity(Gravity.CENTER);
+            tvQty.setTextColor(Color.BLACK);
             LinearLayout.LayoutParams qtyParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             tvQty.setLayoutParams(qtyParams);
 
             // Plus button
             Button btnPlus = new Button(this);
             btnPlus.setText("+");
+            btnMinus.setTextSize(16f);
             btnPlus.setLayoutParams(btnParams);
 
             // Price
             TextView tvPrice = new TextView(this);
             tvPrice.setText("Rs." + (price * quantity));
-            tvPrice.setTextSize(16f);
+            tvPrice.setTextSize(18f);
             tvPrice.setGravity(Gravity.END);
+            tvPrice.setTextColor(Color.BLACK);
             LinearLayout.LayoutParams priceParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 3f);
             tvPrice.setLayoutParams(priceParams);
 
@@ -205,9 +256,9 @@ public class CartActivity extends AppCompatActivity {
         if (subtotal == 0) deliveryFee = 0;
         totalWithDelivery = subtotal + deliveryFee;
 
-        tvTotalCharge.setText("Sub Total (LKR) " + subtotal);
-        tvSubtotal.setText(String.format("%.2f", totalWithDelivery));
-        tvDeliveryFee.setText("Delivery Fee (LKR) " + deliveryFee);
+        tvTotalCharge.setText("Sub Total       :                                   Rs." + subtotal);
+        tvSubtotal.setText(String.format("Rs.%.1f", totalWithDelivery));
+        tvDeliveryFee.setText("Delivery Fee  :                                   Rs." + deliveryFee);
 
         return totalWithDelivery;
     }
@@ -232,8 +283,6 @@ public class CartActivity extends AppCompatActivity {
 
     private void saveOrderToFirebase() {
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("orders");
-
-        String orderId = "ORD-" + new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault()).format(new Date());
         String orderDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         String orderTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
 
@@ -241,6 +290,8 @@ public class CartActivity extends AppCompatActivity {
                 orderId,
                 FirebaseAuth.getInstance().getCurrentUser().getUid(),
                 deliveryAddress,
+                latitude,
+                longitude,
                 nearestBranch,
                 subtotal,
                 deliveryFee,
@@ -274,8 +325,11 @@ public class CartActivity extends AppCompatActivity {
 
         dbHelper.clearCart();
         Toast.makeText(this, "Order placed successfully!", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, OrderActivity.class);
+        startActivity(intent);
+        finish();
 
-        goBackToMainMenu();
+
     }
 
     // Updated: pass deliveryAddress & nearestBranch

@@ -5,25 +5,54 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
     android:background="@android:color/white">
 
     <!-- Title -->
-    <TextView
-        android:id="@+id/tvCartTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Your Cart"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
-        android:paddingBottom="16dp" />
 
-    <!-- Cart items container -->
+    <LinearLayout
+        android:id="@+id/titleBar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingTop="16dp">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="38dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"
+            android:src="@drawable/ic_back" />
+
+        <TextView
+            android:id="@+id/tvCartTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:paddingStart="0dp"
+            android:paddingEnd="16dp"
+            android:text="Your Cart"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#DDDDDD"
+        android:layout_marginVertical="8dp"/>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:padding="16dp">
 
         <LinearLayout
             android:id="@+id/cartContainer"
@@ -33,12 +62,19 @@
 
     </ScrollView>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#DDDDDD" />
+
     <!-- Delivery Details -->
     <LinearLayout
         android:id="@+id/deliveryDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:paddingTop="12dp"
         android:paddingBottom="12dp">
 
@@ -49,7 +85,8 @@
             android:text="Delivery Address: -"
             android:textSize="16sp"
             android:textColor="@android:color/black"
-            android:paddingBottom="4dp" />
+            android:paddingBottom="4dp"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/tvCheckoutBranch"
@@ -57,7 +94,8 @@
             android:layout_height="wrap_content"
             android:text="Nearest Branch: -"
             android:textSize="16sp"
-            android:textColor="@android:color/black" />
+            android:textColor="#FF5722"
+            android:textStyle="bold"/>
 
     </LinearLayout>
 
@@ -65,8 +103,10 @@
         android:id="@+id/tvTotalCharge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Total Charge: -"
-        android:textSize="16sp"
+        android:text="Sub Total: -"
+        android:textSize="18sp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:textColor="@android:color/black" />
 
     <TextView
@@ -74,7 +114,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Delivery Charge: -"
-        android:textSize="16sp"
+        android:textSize="18sp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:textColor="@android:color/black" />
 
     <!-- Subtotal row -->
@@ -82,6 +124,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp">
 
@@ -89,7 +133,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Total Charge:"
+            android:textStyle="bold"
+            android:text="Total Charge :"
             android:textSize="18sp"
             android:textColor="@android:color/black" />
 
@@ -97,7 +142,9 @@
             android:id="@+id/tvSubtotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
             android:text="Rs.0.00"
+            android:textStyle="bold"
             android:textSize="18sp"
             android:textColor="@android:color/black" />
     </LinearLayout>
@@ -107,14 +154,17 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingTop="8dp"
-        android:paddingBottom="8dp">
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Payment Method"
+            android:text="Select Payment Method >"
             android:textSize="18sp"
+            android:textStyle="bold"
             android:textColor="@android:color/black" />
 
     </LinearLayout>
@@ -124,8 +174,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp">
+        android:paddingBottom="5dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
 
         <RadioButton
             android:id="@+id/radioBtnCash"
@@ -151,11 +202,11 @@
         android:id="@+id/btnCheckout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Checkout"
         android:backgroundTint="#FF5722"
+        android:text="Checkout"
+        android:layout_margin="16dp"
         android:textColor="@android:color/white"
-        android:textSize="16sp"
-        android:padding="12dp" />
+        android:textSize="16sp" />
 
 </LinearLayout>
 

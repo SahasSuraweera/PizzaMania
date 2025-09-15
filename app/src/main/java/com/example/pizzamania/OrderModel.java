@@ -5,6 +5,10 @@ import java.util.List;
 public class OrderModel {
     public String userUid;
     public String deliveryAddress;
+    public double latitude;
+
+    public double longitude;
+
     public String nearestBranch;
     public double subtotal;
     public double deliveryFee;
@@ -20,12 +24,14 @@ public class OrderModel {
     // Empty constructor required for Firebase
     public OrderModel() {}
 
-    public OrderModel(String orderID, String userUid, String deliveryAddress, String nearestBranch,
+    public OrderModel(String orderID, String userUid, String deliveryAddress,double latitude,double longitude,String nearestBranch,
                       double subtotal, double deliveryFee, double totalFee,
                       String paymentMethod, String orderStatus, String orderDate, String orderTime) {
         this.orderId = orderID;
         this.userUid = userUid;
         this.deliveryAddress = deliveryAddress;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.nearestBranch = nearestBranch;
         this.subtotal = subtotal;
         this.deliveryFee = deliveryFee;

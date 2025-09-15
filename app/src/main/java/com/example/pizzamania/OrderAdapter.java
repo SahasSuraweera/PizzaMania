@@ -29,7 +29,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     @Override
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
         OrderModel order = orderList.get(position);
-        holder.tvOrderId.setText("Order ID: " + order.getOrderId());
+        holder.tvOrderId.setText(order.getOrderId());
         holder.tvOrderStatus.setText("Status: " + order.getOrderStatus());
         holder.tvOrderTotal.setText("Total: Rs." + order.getTotalFee());
         holder.tvOrderDateTime.setText(order.getOrderDate() + " | " + order.getOrderTime());

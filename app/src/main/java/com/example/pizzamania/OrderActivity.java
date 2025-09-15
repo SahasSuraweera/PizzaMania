@@ -3,6 +3,7 @@ package com.example.pizzamania;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -73,16 +74,62 @@ public class OrderActivity extends AppCompatActivity {
         // Filter buttons
         btnOngoing.setOnClickListener(v -> filterOrders("ongoing"));
         btnPast.setOnClickListener(v -> filterOrders("past"));
+
+        ImageButton btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> {
+            Intent intent3 = new Intent(OrderActivity.this, MainMenuActivity.class);
+            startActivity(intent3);
+            finish();
+        });
+        ImageButton imgBtnHome = findViewById(R.id.imgBtnHome);
+        ImageButton imgBtnOrders = findViewById(R.id.imgBtnOrders);
+        ImageButton imgBtnBranches = findViewById(R.id.imgBtnBranches);
+        ImageButton imgBtnProfile = findViewById(R.id.imgBtnProfile);
+
+        imgBtnHome.setOnClickListener(v -> {
+            Intent intent = new Intent(OrderActivity.this, MainMenuActivity.class);
+            startActivity(intent);
+            finish();
+        });
+
+        // Orders Button
+        imgBtnOrders.setOnClickListener(v -> {
+            Toast.makeText(this, "You are already viewing Orders", Toast.LENGTH_SHORT).show();
+        });
+
+        // Branches Button
+        imgBtnBranches.setOnClickListener(v -> {
+            Intent intent = new Intent(OrderActivity.this, BranchesActivity.class);
+            startActivity(intent);
+            finish();
+        });
+
+        // Profile Button
+        imgBtnProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(OrderActivity.this, UpdateProfileActivity.class);
+            startActivity(intent);
+            finish();
+        });
     }
 
     private void filterOrders(String type) {
         filteredOrders.clear();
 
         for (OrderModel order : allOrders) {
-            if ("ongoing".equals(type) && "pending".equalsIgnoreCase(order.getOrderStatus())) {
-                filteredOrders.add(order);
-            } else if ("past".equals(type) && !"pending".equalsIgnoreCase(order.getOrderStatus())) {
-                filteredOrders.add(order);
+            String status = order.getOrderStatus();
+
+            if ("ongoing".equals(type)) {
+                // Ongoing = everything that's NOT Delivered or Cancelled
+                if (!"Delivered".equalsIgnoreCase(status) &&
+                        !"Cancelled".equalsIgnoreCase(status)) {
+                    filteredOrders.add(order);
+                }
+            } else if ("past".equals(type)) {
+                // Past = Delivered OR Cancelled
+                if ("Delivered".equalsIgnoreCase(status) ||
+                        "Cancelled".equalsIgnoreCase(status)) {
+                    filteredOrders.add(order);
+                }
             }
         }
 

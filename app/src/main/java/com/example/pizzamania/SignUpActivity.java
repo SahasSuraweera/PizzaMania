@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -83,6 +84,24 @@ public class SignUpActivity extends AppCompatActivity {
         tvUploadPhoto.setOnClickListener(v -> showImagePickerOptions());
         btnSelectAddress.setOnClickListener(v -> openMapPicker());
         etAddress.setOnClickListener(v -> openMapPicker());
+
+        Spinner spinner = findViewById(R.id.spinnerCountryCode);
+
+// Load array from resources
+        String[] countryCodes = getResources().getStringArray(R.array.country_codes);
+
+// Create adapter with custom layout
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                R.layout.spinner_item,    // custom layout
+                countryCodes
+        );
+
+// Optional: for dropdown view (can use same layout or a separate one)
+        adapter.setDropDownViewResource(R.layout.spinner_item);
+
+        spinner.setAdapter(adapter);
+
     }
 
     private void setupLaunchers() {

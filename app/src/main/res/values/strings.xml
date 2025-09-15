@@ -2,6 +2,7 @@
     <string name="app_name">PizzaMania</string>
 
     <string-array name="country_codes">
+        <item>+94</item>
         <item>+1</item>
         <item>+7</item>
         <item>+20</item>
@@ -31,6 +32,5 @@
         <item>+86</item>
         <item>+91</item>
         <item>+92</item>
-        <item>+94</item>
     </string-array>
 </resources>
