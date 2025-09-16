@@ -17,11 +17,11 @@ public class OrderModel {
     public String orderStatus;
     public String orderDate;
     public String orderTime;
-    // Extra fields for displaying orders
-    private String orderId;               // Firebase key for this order
-    private List<OrderItem> items;        // Items in this order
 
-    // Empty constructor required for Firebase
+    private String orderId;
+    private List<OrderItem> items;
+
+
     public OrderModel() {}
 
     public OrderModel(String orderID, String userUid, String deliveryAddress,double latitude,double longitude,String nearestBranch,
@@ -42,7 +42,6 @@ public class OrderModel {
         this.orderTime = orderTime;
     }
 
-    // Getter and Setter for orderId
     public void setOrderId(String orderId) { this.orderId = orderId; }
     public String getOrderId() { return orderId; }
 

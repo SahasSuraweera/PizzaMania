@@ -76,7 +76,6 @@ public class SignInActivity extends AppCompatActivity {
                         }
                         editor.apply();
 
-                        // Go to MainMenuActivity
                         startActivity(new Intent(SignInActivity.this, MainMenuActivity.class));
                         finish();
                     } else {

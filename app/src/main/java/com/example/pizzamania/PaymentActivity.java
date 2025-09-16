@@ -106,7 +106,6 @@ public class PaymentActivity extends AppCompatActivity {
         req.getCustomer().getAddress().setCity("");
         req.getCustomer().getAddress().setCountry("");
 
-//Optional Params
         req.getCustomer().getDeliveryAddress().setAddress("");
         req.getCustomer().getDeliveryAddress().setCity("");
         req.getCustomer().getDeliveryAddress().setCountry("");

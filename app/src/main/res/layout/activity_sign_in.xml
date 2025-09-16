@@ -52,9 +52,6 @@
             android:textColor="#080706"
             android:textColorHint="#707070"/>
 
-        <!-- Password Label -->
-
-        <!-- Password Input -->
         <EditText
             android:id="@+id/etPassword"
             android:layout_width="match_parent"
@@ -66,8 +63,6 @@
             android:padding="12dp"
             android:textColor="#080706"
             android:textColorHint="#707070"/>
-
-        <!-- Sign In Button -->
 
         <Button
             android:id="@+id/btnSignIn"

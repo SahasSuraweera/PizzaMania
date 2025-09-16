@@ -65,7 +65,6 @@ public class OrderActivity extends AppCompatActivity {
                                 allOrders.add(order);
                             }
                         }
-                        // Show ongoing by default
                         filterOrders("ongoing");
                     }
 
@@ -130,19 +129,17 @@ public class OrderActivity extends AppCompatActivity {
         toggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             if (isChecked) {
                 if (checkedId == R.id.btnOngoing) {
-                    // Active: Ongoing
+
                     btnOngoing.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF9800"))); // light orange
                     btnOngoing.setTextColor(Color.WHITE);
 
-                    // Inactive: Past
                     btnPast.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
                     btnPast.setTextColor(Color.BLACK);
                 } else if (checkedId == R.id.btnPast) {
-                    // Active: Past
+
                     btnPast.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF9800")));
                     btnPast.setTextColor(Color.WHITE);
 
-                    // Inactive: Ongoing
                     btnOngoing.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
                     btnOngoing.setTextColor(Color.BLACK);
                 }
@@ -157,13 +154,13 @@ public class OrderActivity extends AppCompatActivity {
             String status = order.getOrderStatus();
 
             if ("ongoing".equals(type)) {
-                // Ongoing = everything that's NOT Delivered or Cancelled
+
                 if (!"Delivered".equalsIgnoreCase(status) &&
                         !"Cancelled".equalsIgnoreCase(status)) {
                     filteredOrders.add(order);
                 }
             } else if ("past".equals(type)) {
-                // Past = Delivered OR Cancelled
+
                 if ("Delivered".equalsIgnoreCase(status) ||
                         "Cancelled".equalsIgnoreCase(status)) {
                     filteredOrders.add(order);

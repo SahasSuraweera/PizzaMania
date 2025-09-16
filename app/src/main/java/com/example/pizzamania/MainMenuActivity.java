@@ -66,7 +66,6 @@ public class MainMenuActivity extends AppCompatActivity {
         dbRef = FirebaseDatabase.getInstance().getReference("Pizzas");
         loadPizzasFromRealtimeDB();
 
-        // Sign out button
         ImageButton btnSignOut = findViewById(R.id.btnSignOut);
         btnSignOut.setOnClickListener(v -> showSignOutDialog());
 
@@ -80,14 +79,13 @@ public class MainMenuActivity extends AppCompatActivity {
             startActivity(new Intent(MainMenuActivity.this, MainMenuActivity.class));
             finish();
         });
-        // Orders button
+
         ImageButton btnOrders = findViewById(R.id.imgBtnOrders);
         btnOrders.setOnClickListener(v -> {
             startActivity(new Intent(MainMenuActivity.this, OrderActivity.class));
             finish();
         });
 
-        // Branches button
         ImageButton btnBranches = findViewById(R.id.imgBtnBranches);
         btnBranches.setOnClickListener(v -> {
             startActivity(new Intent(MainMenuActivity.this, BranchesActivity.class));
@@ -99,7 +97,6 @@ public class MainMenuActivity extends AppCompatActivity {
             finish();
         });
 
-        // Fetch user info
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
@@ -107,7 +104,6 @@ public class MainMenuActivity extends AppCompatActivity {
             database = FirebaseDatabase.getInstance("https://pizzamania-d2775-default-rtdb.firebaseio.com/");
             userRef = database.getReference("users").child(uid);
 
-            // Name
             userRef.child("fullName").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -121,7 +117,6 @@ public class MainMenuActivity extends AppCompatActivity {
                 }
             });
 
-            // Address
             userRef.child("address").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -138,7 +133,6 @@ public class MainMenuActivity extends AppCompatActivity {
                 }
             });
 
-            // Coordinates → nearest branch
             userRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -181,25 +175,21 @@ public class MainMenuActivity extends AppCompatActivity {
         }
     }
 
-    // Method to reset deselected items after order
     private void clearSelectedFlags() {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.clear();
         editor.apply();
     }
 
-    // Call this in onResume to update buttons
     @Override
     protected void onResume() {
         super.onResume();
 
-        // Check if coming from CartActivity with resetCartSelections
         Intent intent = getIntent();
         boolean resetCartSelections = intent.getBooleanExtra("resetCartSelections", false);
         String passedDeliveryAddress = intent.getStringExtra("deliveryAddress");
         String passedNearestBranch = intent.getStringExtra("nearestBranch");
 
-        // Only update delivery info if passed from CartActivity
         if (passedDeliveryAddress != null) {
             deliveryAddress = passedDeliveryAddress;
             tvDeliveryLocation.setText("Delivery Address : " + deliveryAddress);
@@ -210,12 +200,10 @@ public class MainMenuActivity extends AppCompatActivity {
             tvNearestBranch.setText("Nearest branch : " + nearestBranch);
         }
 
-        // Reset cart selections if requested
         if (resetCartSelections) {
-            clearSelectedFlags(); // reset pizza selections only
+            clearSelectedFlags();
         }
 
-        // Load pizzas and reflect selection states
         loadPizzasFromRealtimeDB();
     }
 
@@ -225,15 +213,14 @@ public class MainMenuActivity extends AppCompatActivity {
                 .setTitle("Sign Out")
                 .setMessage("Are you sure you want to sign out?")
                 .setPositiveButton("Yes", (dialog, which) -> {
-                    // Clear any saved login info
+
                     getSharedPreferences("loginPrefs", MODE_PRIVATE).edit().clear().apply();
-                    // Clear selected items flags
+
                     getSharedPreferences("SelectedItems", MODE_PRIVATE).edit().clear().apply();
 
-                    // Sign out from Firebase
+
                     FirebaseAuth.getInstance().signOut();
 
-                    // Go back to main login screen
                     Intent intent = new Intent(MainMenuActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
@@ -260,9 +247,6 @@ public class MainMenuActivity extends AppCompatActivity {
         }
     }
 
-
-// ==================== PIZZAS ====================
-
     private void loadPizzasFromRealtimeDB() {
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -282,7 +266,7 @@ public class MainMenuActivity extends AppCompatActivity {
                         }
                     }
                 } else {
-                    loadPizzasFromSQLite(); // fallback
+                    loadPizzasFromSQLite();
                 }
             }
 
@@ -331,7 +315,6 @@ public class MainMenuActivity extends AppCompatActivity {
         details.addView(tvDescription);
         details.addView(tvPrice);
 
-        // Right: image + select button
         LinearLayout right = new LinearLayout(this);
         right.setOrientation(LinearLayout.VERTICAL);
         right.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -382,7 +365,6 @@ public class MainMenuActivity extends AppCompatActivity {
         menuContainer.addView(divider);
     }
 
-    // Async load image
     private static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView imageView;
 
@@ -411,8 +393,6 @@ public class MainMenuActivity extends AppCompatActivity {
             else imageView.setImageResource(R.drawable.pizza);
         }
     }
-
-    // ==================== NEAREST BRANCH ====================
 
     private void checkNearestBranch(double userLat, double userLng) {
         DatabaseReference branchesRef = FirebaseDatabase.getInstance().getReference("branches");

@@ -29,21 +29,17 @@ public class BranchesActivity extends AppCompatActivity {
 
         branchContainer = findViewById(R.id.branchContainer);
 
-        // Firebase reference
         dbRef = FirebaseDatabase.getInstance("https://pizzamania-d2775-default-rtdb.firebaseio.com/")
                 .getReference("branches");
 
-        // Load branch cards
         loadBranches();
 
-        // Back button
         ImageButton btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> {
             startActivity(new Intent(BranchesActivity.this, MainMenuActivity.class));
             finish();
         });
 
-        // Bottom navigation buttons
         ImageButton imgBtnHome = findViewById(R.id.imgBtnHome);
         ImageButton imgBtnOrders = findViewById(R.id.imgBtnOrders);
         ImageButton imgBtnBranches = findViewById(R.id.imgBtnBranches);
@@ -96,11 +92,10 @@ public class BranchesActivity extends AppCompatActivity {
     }
 
     private void addBranchCard(BranchDBHelper branch) {
-        // Inflate the MaterialCardView layout
+
         androidx.cardview.widget.CardView card = (androidx.cardview.widget.CardView)
                 getLayoutInflater().inflate(R.layout.branch_item, branchContainer, false);
 
-        // Set branch details
         TextView tvName = card.findViewById(R.id.tvBranchName);
         TextView tvAddress = card.findViewById(R.id.tvBranchAddress);
         TextView tvOpen = card.findViewById(R.id.tvBranchOpen);
@@ -111,7 +106,6 @@ public class BranchesActivity extends AppCompatActivity {
         tvOpen.setText("Open Days: " + branch.getOpeningDays() + " | Hours: " + branch.getOpeningHours());
         tvClick.setText("Tap to view location >>>");
 
-        // Click listener to open MapActivity
         card.setOnClickListener(v -> {
             Intent intent = new Intent(BranchesActivity.this, MapActivity.class);
             intent.putExtra("latitude", branch.getLatitude());
@@ -119,7 +113,6 @@ public class BranchesActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Add card to container
         branchContainer.addView(card);
     }
 }

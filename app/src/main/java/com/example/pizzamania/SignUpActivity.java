@@ -87,25 +87,21 @@ public class SignUpActivity extends AppCompatActivity {
 
         Spinner spinner = findViewById(R.id.spinnerCountryCode);
 
-// Load array from resources
         String[] countryCodes = getResources().getStringArray(R.array.country_codes);
 
-// Create adapter with custom layout
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
-                R.layout.spinner_item,    // custom layout
+                R.layout.spinner_item,
                 countryCodes
         );
 
-// Optional: for dropdown view (can use same layout or a separate one)
         adapter.setDropDownViewResource(R.layout.spinner_item);
 
         spinner.setAdapter(adapter);
-
     }
 
     private void setupLaunchers() {
-        // Camera
+
         cameraLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -120,7 +116,7 @@ public class SignUpActivity extends AppCompatActivity {
                     }
                 });
 
-        // Gallery
+
         galleryLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -139,7 +135,6 @@ public class SignUpActivity extends AppCompatActivity {
                     }
                 });
 
-        // Map Picker
         mapLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {

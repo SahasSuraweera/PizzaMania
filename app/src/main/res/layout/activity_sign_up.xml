@@ -106,7 +106,6 @@
                     android:textColorHint="#707070" />
             </LinearLayout>
 
-            <!-- Email -->
             <EditText
                 android:id="@+id/etEmail"
                 android:layout_width="match_parent"
@@ -119,7 +118,6 @@
                 android:textColorHint="#707070"
                 android:layout_marginTop="16dp" />
 
-            <!-- Address Selection -->
             <LinearLayout
                 android:id="@+id/addressContainer"
                 android:layout_width="match_parent"
@@ -163,7 +161,6 @@
                 android:textColorHint="#707070"
                 android:layout_marginTop="16dp"/>
 
-            <!-- Confirm Password -->
             <EditText
                 android:id="@+id/etConfirmPassword"
                 android:layout_width="match_parent"
@@ -176,7 +173,6 @@
                 android:textColorHint="#707070"
                 android:layout_marginTop="12dp"/>
 
-            <!-- Register Button -->
             <Button
                 android:id="@+id/btnRegister"
                 android:layout_width="match_parent"
@@ -187,7 +183,6 @@
                 android:textStyle="bold"
                 android:layout_marginTop="24dp" />
 
-            <!-- Already have account -->
             <TextView
                 android:id="@+id/tvAlreadyAccount"
                 android:layout_width="wrap_content"

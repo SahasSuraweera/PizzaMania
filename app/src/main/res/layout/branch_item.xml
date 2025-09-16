@@ -49,7 +49,6 @@
             android:textColor="@android:color/black"
             android:layout_marginTop="4dp" />
 
-        <!-- Optional: Click message -->
         <TextView
             android:id="@+id/tvBranchClick"
             android:layout_width="wrap_content"

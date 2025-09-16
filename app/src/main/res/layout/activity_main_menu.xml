@@ -97,7 +97,6 @@
 
         </LinearLayout>
 
-        <!-- Edit Button aligned to the right -->
         <Button
             android:id="@+id/btnEditLocation"
             android:layout_width="75dp"
@@ -112,7 +111,6 @@
 
     </RelativeLayout>
 
-    <!-- Bottom Navigation -->
     <LinearLayout
         android:id="@+id/bottomMenu"
         android:layout_width="match_parent"
@@ -121,7 +119,6 @@
         android:orientation="vertical"
         android:background="#FF5722">
 
-        <!-- Icons Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="35dp"
@@ -162,7 +159,6 @@
                 app:srcCompat="@drawable/ic_profile" />
         </LinearLayout>
 
-        <!-- Labels Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="22dp"
@@ -208,9 +204,6 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Scrollable Menu Items -->
-
-    <!-- Floating Cart Button -->
     <ScrollView
         android:id="@+id/scrollMenu"
         android:layout_width="match_parent"

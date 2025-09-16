@@ -6,7 +6,6 @@ public class OrderItem {
     private double price;
     private int quantity;
 
-    // Empty constructor for Firebase
     public OrderItem() {}
 
     public String getName() { return name; }

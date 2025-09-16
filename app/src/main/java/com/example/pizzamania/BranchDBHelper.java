@@ -8,7 +8,6 @@ public class BranchDBHelper {
     public String openingHours;
     public String openingDays;
 
-    // Default constructor required by Firebase
     public BranchDBHelper() {}
 
     public BranchDBHelper(String name, String address, double latitude, double longitude, String openingHours, String openingDays) {

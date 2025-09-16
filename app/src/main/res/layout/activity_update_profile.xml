@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:background="#F5F5F5">
 
-    <!-- Header -->
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
@@ -44,7 +43,6 @@
 
     </LinearLayout>
 
-    <!-- Scrollable Content -->
     <ScrollView
         android:id="@+id/scrollContent"
         android:layout_below="@id/header"
@@ -90,7 +88,6 @@
 
                     </RelativeLayout>
 
-                    <!-- Upload / Change Photo -->
                     <Button
                         android:id="@+id/tvUploadPhoto"
                         android:layout_width="wrap_content"
@@ -102,7 +99,6 @@
                         android:textStyle="bold"
                         android:layout_marginTop="8dp" />
 
-                    <!-- Full Name -->
                     <EditText
                         android:id="@+id/etName"
                         android:layout_width="match_parent"
@@ -114,7 +110,6 @@
                         android:textStyle="bold"
                         android:textColorHint="#707070" />
 
-                    <!-- Phone Number -->
                     <EditText
                         android:id="@+id/etPhone"
                         android:layout_width="match_parent"
@@ -126,7 +121,6 @@
                         android:textStyle="bold"
                         android:textColorHint="#707070" />
 
-                    <!-- Email -->
                     <EditText
                         android:id="@+id/etEmail"
                         android:layout_width="match_parent"
@@ -139,7 +133,6 @@
                         android:textColorHint="#707070"
                         android:enabled="false" />
 
-                    <!-- Address Picker -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -168,7 +161,6 @@
                             app:srcCompat="@drawable/ic_location" />
                     </LinearLayout>
 
-                    <!-- Password -->
                     <EditText
                         android:id="@+id/etPassword"
                         android:layout_width="match_parent"
@@ -194,7 +186,6 @@
 
                         android:layout_marginBottom="20dp" />
 
-                    <!-- Update Button -->
                     <Button
                         android:id="@+id/btnUpdate"
                         android:layout_width="match_parent"
@@ -209,7 +200,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Bottom Navigation -->
     <LinearLayout
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"

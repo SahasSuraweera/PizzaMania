@@ -66,7 +66,6 @@ public class CartActivity extends AppCompatActivity {
 
         dbHelper = new CartDBHelper(this);
 
-        // Get intent data
         Intent intent = getIntent();
         userUid = intent.getStringExtra("userUid");
         deliveryAddress = intent.getStringExtra("deliveryAddress");
@@ -76,7 +75,6 @@ public class CartActivity extends AppCompatActivity {
         double nearestBranchLat = intent.getDoubleExtra("nearestBranchLat", 0);
         double nearestBranchLog = intent.getDoubleExtra("nearestBranchLog", 0);
 
-        // Show delivery info
         TextView tvCheckoutAddress = findViewById(R.id.tvCheckoutAddress);
         TextView tvCheckoutBranch = findViewById(R.id.tvCheckoutBranch);
         tvCheckoutAddress.setText("Delivery Address    : " + deliveryAddress);
@@ -85,7 +83,6 @@ public class CartActivity extends AppCompatActivity {
         deliveryFee = calculateDeliveryFee(latitude, longitude, nearestBranchLat, nearestBranchLog);
         tvDeliveryFee.setText("Delivery Fee              Rs. " + deliveryFee);
 
-        // Payment method
         radioGroupPayment = findViewById(R.id.radioGroupPayment);
         radioBtnCash = findViewById(R.id.radioBtnCash);
         radioBtnCard = findViewById(R.id.radioBtnCard);
@@ -106,7 +103,6 @@ public class CartActivity extends AppCompatActivity {
 
         loadCartItems();
 
-        // Checkout button
         btnCheckout.setOnClickListener(v -> {
             if (radioBtnCard.isChecked()) {
                 new AlertDialog.Builder(this)
@@ -124,7 +120,7 @@ public class CartActivity extends AppCompatActivity {
                         .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
                         .show();
 
-            } else if (radioBtnCash.isChecked()) { // Cash on Delivery option
+            } else if (radioBtnCash.isChecked()) {
                 new AlertDialog.Builder(this)
                         .setTitle("Confirm COD Order")
                         .setMessage("Are you sure you want to place this order with Cash on Delivery?")
@@ -147,7 +143,6 @@ public class CartActivity extends AppCompatActivity {
         });
     }
 
-
         private void loadCartItems() {
         cartContainer.removeAllViews();
         List<CartDBHelper.CartItem> items = dbHelper.getAllItems();
@@ -168,7 +163,6 @@ public class CartActivity extends AppCompatActivity {
             row.setPadding(12, 8, 12, 8);
             row.setGravity(Gravity.CENTER_VERTICAL);
 
-            // Name
             TextView tvName = new TextView(this);
             tvName.setText(name + " (" + size + ")");
             tvName.setTextSize(18f);
@@ -176,13 +170,12 @@ public class CartActivity extends AppCompatActivity {
             LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 4f);
             tvName.setLayoutParams(nameParams);
 
-            // Minus button
             Button btnMinus = new Button(this);
             btnMinus.setText("−");
             btnMinus.setTextSize(16f);
             LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(70, 70);
             btnMinus.setLayoutParams(btnParams);
-            // Quantity
+
             TextView tvQty = new TextView(this);
             tvQty.setText(String.valueOf(quantity));
             tvQty.setTextSize(16f);
@@ -190,13 +183,11 @@ public class CartActivity extends AppCompatActivity {
             LinearLayout.LayoutParams qtyParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             tvQty.setLayoutParams(qtyParams);
 
-            // Plus button
             Button btnPlus = new Button(this);
             btnPlus.setText("+");
             btnMinus.setTextSize(16f);
             btnPlus.setLayoutParams(btnParams);
 
-            // Price
             TextView tvPrice = new TextView(this);
             tvPrice.setText("Rs." + (price * quantity));
             tvPrice.setTextSize(18f);
@@ -205,7 +196,6 @@ public class CartActivity extends AppCompatActivity {
             LinearLayout.LayoutParams priceParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 3f);
             tvPrice.setLayoutParams(priceParams);
 
-            // Listeners
             btnPlus.setOnClickListener(v -> {
                 int newQty = Integer.parseInt(tvQty.getText().toString()) + 1;
                 tvQty.setText(String.valueOf(newQty));
@@ -227,7 +217,6 @@ public class CartActivity extends AppCompatActivity {
                 }
                 updateSubtotal();
 
-                // If cart is empty, go back to main menu
                 if (dbHelper.getAllItems().isEmpty()) goBackToMainMenu();
             });
 
@@ -331,15 +320,11 @@ public class CartActivity extends AppCompatActivity {
 
 
     }
-
-    // Updated: pass deliveryAddress & nearestBranch
     private void goBackToMainMenu() {
         Intent intent = new Intent(this, MainMenuActivity.class);
 
-        // Only tell MainMenuActivity to reset cart selections
         intent.putExtra("resetCartSelections", true);
 
-        // Pass delivery info so it stays intact
         intent.putExtra("deliveryAddress", deliveryAddress);
         intent.putExtra("nearestBranch", nearestBranch);
 

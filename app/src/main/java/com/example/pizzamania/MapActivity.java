@@ -55,12 +55,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-        // Confirm selection on map click
         mMap.setOnMapClickListener(latLng -> {
             selectedLatLng = latLng;
             marker.setPosition(latLng);
 
-            // Convert LatLng to address
             String address = getAddressFromLatLng(selectedLatLng);
 
             Intent resultIntent = new Intent();

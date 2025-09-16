@@ -15,7 +15,6 @@ public class MenuDBHelper {
         pizzas.add(new MainMenuActivity.Pizza("Pepperoni", "Large", 1200.0, "Pepperoni & cheese", ""));
         pizzas.add(new MainMenuActivity.Pizza("BBQ Chicken", "Large", 1300.0, "BBQ chicken & cheese", ""));
 
-        // Apply limit safely
         List<MainMenuActivity.Pizza> result = new ArrayList<>();
         if (limit <= 0 || limit >= pizzas.size()) {
             result.addAll(pizzas);

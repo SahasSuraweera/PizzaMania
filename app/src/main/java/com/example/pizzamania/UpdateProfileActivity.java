@@ -57,14 +57,12 @@ public class UpdateProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_profile);
 
-        // Firebase
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
-        if (user == null) finish(); // Close if not logged in
+        if (user == null) finish();
         String uid = user.getUid();
         dbRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
 
-        // Views
         etName = findViewById(R.id.etName);
         etPhone = findViewById(R.id.etPhone);
         etAddress = findViewById(R.id.etAddress);
@@ -81,7 +79,6 @@ public class UpdateProfileActivity extends AppCompatActivity {
         setupLaunchers();
         loadUserDetails();
 
-        // Listeners
         tvUploadPhoto.setOnClickListener(v -> showImagePickerOptions());
         btnSelectAddress.setOnClickListener(v -> openMapPicker());
         etAddress.setOnClickListener(v -> openMapPicker());
@@ -106,26 +103,22 @@ public class UpdateProfileActivity extends AppCompatActivity {
             finish();
         });
 
-        // Orders Button
         imgBtnOrders.setOnClickListener(v -> {
             Intent intent = new Intent(UpdateProfileActivity.this, OrderActivity.class);
             startActivity(intent);
             finish();
         });
 
-        // Branches Button
         imgBtnBranches.setOnClickListener(v -> {
             Intent intent = new Intent(UpdateProfileActivity.this, BranchesActivity.class);
             startActivity(intent);
             finish();
         });
 
-        // Profile Button
         imgBtnProfile.setOnClickListener(v -> {
             Toast.makeText(this, "You are already viewing Orders", Toast.LENGTH_SHORT).show();
         });
 
-        // Back button
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
     }
 
@@ -280,7 +273,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
         if (user == null) return;
 
         // **TODO**: Ask user for password via dialog before re-authentication
-        String userPassword = "USER_PASSWORD_HERE"; // Replace dynamically
+        String userPassword = "USER_PASSWORD_HERE";
 
         AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), userPassword);
         user.reauthenticate(credential).addOnCompleteListener(reauthTask -> {

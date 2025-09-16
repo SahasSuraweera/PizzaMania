@@ -41,8 +41,6 @@ public class CartDBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CART);
         onCreate(db);
     }
-
-    // Add or update item
     public void addOrUpdateItem(String name, String size, double price, int quantity) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -68,13 +66,11 @@ public class CartDBHelper extends SQLiteOpenHelper {
         if (cursor != null) cursor.close();
     }
 
-    // Remove item
     public void removeItem(String name, String size) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_CART, COL_NAME + "=? AND " + COL_SIZE + "=?", new String[]{name, size});
     }
 
-    // Get all items
     public ArrayList<CartItem> getAllItems() {
         ArrayList<CartItem> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -94,7 +90,6 @@ public class CartDBHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    // Calculate subtotal
     public double getSubTotal() {
         double total = 0;
         for (CartItem item : getAllItems()) {
@@ -103,13 +98,11 @@ public class CartDBHelper extends SQLiteOpenHelper {
         return total;
     }
 
-    // Clear cart
     public void clearCart() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_CART, null, null);
     }
 
-    // CartItem class
     public static class CartItem {
         private String name;
         private String size;

@@ -15,7 +15,6 @@
         android:orientation="vertical"
         android:padding="12dp">
 
-        <!-- Order ID and Status Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -48,7 +47,6 @@
                 android:textStyle="bold"/>
         </LinearLayout>
 
-        <!-- Total -->
         <TextView
             android:id="@+id/tvOrderTotal"
             android:layout_width="wrap_content"
@@ -58,7 +56,6 @@
             android:textSize="14sp"
             android:paddingTop="4dp"/>
 
-        <!-- Date & Time -->
         <TextView
             android:id="@+id/tvOrderDateTime"
             android:layout_width="wrap_content"

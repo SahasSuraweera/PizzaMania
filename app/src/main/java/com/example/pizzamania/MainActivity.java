@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
         String email = sharedPreferences.getString("email", "");
         String password = sharedPreferences.getString("password", "");
 
-        // Only consider logged-in if user is registered & Remember Me is true
         return (user != null) || (remember && !email.isEmpty() && !password.isEmpty());
     }
 
