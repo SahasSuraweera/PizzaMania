@@ -1,7 +1,9 @@
 package com.example.pizzamania;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,10 +28,45 @@ public class BranchesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_branches);
 
         branchContainer = findViewById(R.id.branchContainer);
+
+        // Firebase reference
         dbRef = FirebaseDatabase.getInstance("https://pizzamania-d2775-default-rtdb.firebaseio.com/")
                 .getReference("branches");
 
+        // Load branch cards
         loadBranches();
+
+        // Back button
+        ImageButton btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> {
+            startActivity(new Intent(BranchesActivity.this, MainMenuActivity.class));
+            finish();
+        });
+
+        // Bottom navigation buttons
+        ImageButton imgBtnHome = findViewById(R.id.imgBtnHome);
+        ImageButton imgBtnOrders = findViewById(R.id.imgBtnOrders);
+        ImageButton imgBtnBranches = findViewById(R.id.imgBtnBranches);
+        ImageButton imgBtnProfile = findViewById(R.id.imgBtnProfile);
+
+        imgBtnHome.setOnClickListener(v -> {
+            startActivity(new Intent(BranchesActivity.this, MainMenuActivity.class));
+            finish();
+        });
+
+        imgBtnOrders.setOnClickListener(v -> {
+            startActivity(new Intent(BranchesActivity.this, OrderActivity.class));
+            finish();
+        });
+
+        imgBtnBranches.setOnClickListener(v -> {
+            Toast.makeText(this, "You are already viewing branches", Toast.LENGTH_SHORT).show();
+        });
+
+        imgBtnProfile.setOnClickListener(v -> {
+            startActivity(new Intent(BranchesActivity.this, UpdateProfileActivity.class));
+            finish();
+        });
     }
 
     private void loadBranches() {
@@ -46,7 +83,7 @@ public class BranchesActivity extends AppCompatActivity {
                 for (DataSnapshot branchSnap : snapshot.getChildren()) {
                     BranchDBHelper branch = branchSnap.getValue(BranchDBHelper.class);
                     if (branch != null) {
-                        addBranchView(branch);
+                        addBranchCard(branch);
                     }
                 }
             }
@@ -58,36 +95,31 @@ public class BranchesActivity extends AppCompatActivity {
         });
     }
 
-    private void addBranchView(BranchDBHelper branch) {
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(16, 16, 16, 16);
-        layout.setBackgroundColor(0xFFEFEFEF);
+    private void addBranchCard(BranchDBHelper branch) {
+        // Inflate the MaterialCardView layout
+        androidx.cardview.widget.CardView card = (androidx.cardview.widget.CardView)
+                getLayoutInflater().inflate(R.layout.branch_item, branchContainer, false);
 
-        TextView tvName = new TextView(this);
-        tvName.setText("Branch: " + branch.getName());
-        tvName.setTextSize(16f);
+        // Set branch details
+        TextView tvName = card.findViewById(R.id.tvBranchName);
+        TextView tvAddress = card.findViewById(R.id.tvBranchAddress);
+        TextView tvOpen = card.findViewById(R.id.tvBranchOpen);
+        TextView tvClick = card.findViewById(R.id.tvBranchClick);
 
-        TextView tvAddress = new TextView(this);
+        tvName.setText(branch.getName() + " Branch");
         tvAddress.setText("Address: " + branch.getAddress());
-
-        TextView tvLatLng = new TextView(this);
-        tvLatLng.setText("Lat/Lng: " + branch.getLatitude() + " / " + branch.getLongitude());
-
-        TextView tvOpen = new TextView(this);
         tvOpen.setText("Open Days: " + branch.getOpeningDays() + " | Hours: " + branch.getOpeningHours());
+        tvClick.setText("Tap to view location >>>");
 
-        layout.addView(tvName);
-        layout.addView(tvAddress);
-        layout.addView(tvLatLng);
-        layout.addView(tvOpen);
+        // Click listener to open MapActivity
+        card.setOnClickListener(v -> {
+            Intent intent = new Intent(BranchesActivity.this, MapActivity.class);
+            intent.putExtra("latitude", branch.getLatitude());
+            intent.putExtra("longitude", branch.getLongitude());
+            startActivity(intent);
+        });
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, 0, 0, 16);
-        layout.setLayoutParams(params);
-
-        branchContainer.addView(layout);
+        // Add card to container
+        branchContainer.addView(card);
     }
-
 }

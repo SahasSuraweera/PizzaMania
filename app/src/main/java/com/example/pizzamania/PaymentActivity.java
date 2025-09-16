@@ -7,6 +7,7 @@ import android.provider.ContactsContract;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -24,9 +25,6 @@ import lk.payhere.androidsdk.model.Item;
 public class PaymentActivity extends AppCompatActivity {
 
     private static final String TAG = "PaymentActivity";
-
-    private Button button;
-    private TextView textView;
 
     private final ActivityResultLauncher<Intent> payHereLauncher =
             registerForActivityResult(
@@ -58,12 +56,14 @@ public class PaymentActivity extends AppCompatActivity {
                                         finish();
                                     }
                                     Log.d(TAG, msg);
-                                    textView.setText(msg);
                                 }
                             }
                         } else {
                             Log.d(TAG, "Payment cancelled or failed.");
-                            textView.setText("Payment cancelled or failed.");
+                            Toast.makeText(this, "Payment cancelled or failed.", Toast.LENGTH_SHORT).show();
+                            Intent intent3 = new Intent(PaymentActivity.this, CartActivity.class);
+                            startActivity(intent3);
+                            finish();
                         }
                     }
             );
@@ -81,14 +81,12 @@ public class PaymentActivity extends AppCompatActivity {
         TextView textOrderId = findViewById(R.id.textOrderID);
         TextView textTotalFee = findViewById(R.id.textTotalFee);
         TextView textEmail = findViewById(R.id.textEmail);
-        button = findViewById(R.id.button);
-        textView = findViewById(R.id.textView);
 
-        textOrderId.setText("Order ID: " + orderId);
+        textOrderId.setText(orderId);
         textTotalFee.setText("Payble Amount: " + totalCharge);
-        textEmail.setText("Confirmation Email: " + userEmail);
+        textEmail.setText("Confirmation send to >>> " + userEmail);
 
-        button.setOnClickListener(v -> makePayment(orderId, totalCharge, userEmail));
+        makePayment(orderId, totalCharge, userEmail);
     }
 
     private void makePayment(String orderId, Double totalCharge, String email) {

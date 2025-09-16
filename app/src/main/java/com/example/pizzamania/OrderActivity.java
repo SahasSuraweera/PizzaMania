@@ -1,6 +1,8 @@
 package com.example.pizzamania;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -11,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -109,6 +113,40 @@ public class OrderActivity extends AppCompatActivity {
             Intent intent = new Intent(OrderActivity.this, UpdateProfileActivity.class);
             startActivity(intent);
             finish();
+        });
+
+        MaterialButtonToggleGroup toggleGroup = findViewById(R.id.toggleGroup);
+        MaterialButton btnOngoing = findViewById(R.id.btnOngoing);
+        MaterialButton btnPast = findViewById(R.id.btnPast);
+
+        toggleGroup.check(R.id.btnOngoing);
+        btnOngoing.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF9800"))); // light orange
+        btnOngoing.setTextColor(Color.WHITE);
+
+        btnPast.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+        btnPast.setTextColor(Color.BLACK);
+
+
+        toggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (isChecked) {
+                if (checkedId == R.id.btnOngoing) {
+                    // Active: Ongoing
+                    btnOngoing.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF9800"))); // light orange
+                    btnOngoing.setTextColor(Color.WHITE);
+
+                    // Inactive: Past
+                    btnPast.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+                    btnPast.setTextColor(Color.BLACK);
+                } else if (checkedId == R.id.btnPast) {
+                    // Active: Past
+                    btnPast.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF9800")));
+                    btnPast.setTextColor(Color.WHITE);
+
+                    // Inactive: Ongoing
+                    btnOngoing.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+                    btnOngoing.setTextColor(Color.BLACK);
+                }
+            }
         });
     }
 

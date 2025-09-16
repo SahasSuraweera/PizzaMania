@@ -8,11 +8,10 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -38,7 +37,8 @@ import java.util.Map;
 public class UpdateProfileActivity extends AppCompatActivity {
 
     private EditText etName, etPhone, etAddress, etEmail, etPassword, etConfirmPassword;
-    private Button btnUpdate, btnDelete, tvUploadPhoto;
+    private Button btnUpdate, tvUploadPhoto;
+    private ImageButton btnDelete;
     private ImageView imgProfile, btnSelectAddress;
     private Uri imageUri;
 
@@ -57,9 +57,10 @@ public class UpdateProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_profile);
 
+        // Firebase
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
-        if (user == null) finish();
+        if (user == null) finish(); // Close if not logged in
         String uid = user.getUid();
         dbRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
 
@@ -80,20 +81,59 @@ public class UpdateProfileActivity extends AppCompatActivity {
         setupLaunchers();
         loadUserDetails();
 
+        // Listeners
         tvUploadPhoto.setOnClickListener(v -> showImagePickerOptions());
         btnSelectAddress.setOnClickListener(v -> openMapPicker());
         etAddress.setOnClickListener(v -> openMapPicker());
 
         btnUpdate.setOnClickListener(v -> updateProfile());
         btnDelete.setOnClickListener(v -> confirmDeleteAccount());
+
+        ImageButton btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> {
+            Intent intent3 = new Intent(UpdateProfileActivity.this, MainMenuActivity.class);
+            startActivity(intent3);
+            finish();
+        });
+        ImageButton imgBtnHome = findViewById(R.id.imgBtnHome);
+        ImageButton imgBtnOrders = findViewById(R.id.imgBtnOrders);
+        ImageButton imgBtnBranches = findViewById(R.id.imgBtnBranches);
+        ImageButton imgBtnProfile = findViewById(R.id.imgBtnProfile);
+
+        imgBtnHome.setOnClickListener(v -> {
+            Intent intent = new Intent(UpdateProfileActivity.this, MainMenuActivity.class);
+            startActivity(intent);
+            finish();
+        });
+
+        // Orders Button
+        imgBtnOrders.setOnClickListener(v -> {
+            Intent intent = new Intent(UpdateProfileActivity.this, OrderActivity.class);
+            startActivity(intent);
+            finish();
+        });
+
+        // Branches Button
+        imgBtnBranches.setOnClickListener(v -> {
+            Intent intent = new Intent(UpdateProfileActivity.this, BranchesActivity.class);
+            startActivity(intent);
+            finish();
+        });
+
+        // Profile Button
+        imgBtnProfile.setOnClickListener(v -> {
+            Toast.makeText(this, "You are already viewing Orders", Toast.LENGTH_SHORT).show();
+        });
+
+        // Back button
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
     }
 
     private void setupLaunchers() {
         cameraLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null &&
-                            result.getData().getExtras() != null) {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Bitmap bitmap = (Bitmap) result.getData().getExtras().get("data");
                         if (bitmap != null) {
                             imgProfile.setImageBitmap(bitmap);
@@ -107,7 +147,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         imageUri = result.getData().getData();
-                        if (imageUri != null) imgProfile.setImageURI(imageUri);
+                        imgProfile.setImageURI(imageUri);
                     }
                 });
 
@@ -182,40 +222,28 @@ public class UpdateProfileActivity extends AppCompatActivity {
             return;
         }
 
-        // Password confirmation
-        if (!password.isEmpty() || !confirmPassword.isEmpty()) {
-            if (!password.equals(confirmPassword)) {
-                Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
-                return;
-            }
+        if (!password.isEmpty() && !password.equals(confirmPassword)) {
+            Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        // Upload profile image first if exists
         if (imageUri != null) {
             StorageReference storageRef = FirebaseStorage.getInstance()
                     .getReference("profile_images/" + mAuth.getUid() + ".jpg");
             storageRef.putFile(imageUri)
                     .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl()
-                            .addOnSuccessListener(uri -> saveProfileToDB(name, phone, address, uri.toString(), password))
-                            .addOnFailureListener(e -> Log.e("UpdateProfile", "Download URL failed", e)))
-                    .addOnFailureListener(e -> Log.e("UpdateProfile", "Image upload failed", e));
+                            .addOnSuccessListener(uri -> saveProfileToDB(name, phone, address, uri.toString(), password)))
+                    .addOnFailureListener(e -> Toast.makeText(this, "Image upload failed", Toast.LENGTH_SHORT).show());
         } else {
             saveProfileToDB(name, phone, address, null, password);
         }
     }
 
     private Uri getImageUriFromBitmap(Bitmap bitmap) {
-        try {
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, bytes); // compress the bitmap
-            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Profile", null);
-            if (path != null) {
-                return Uri.parse(path);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, bytes);
+        String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Profile", null);
+        return path != null ? Uri.parse(path) : null;
     }
 
     private void saveProfileToDB(String name, String phone, String address, String profileUrl, String password) {
@@ -227,18 +255,15 @@ public class UpdateProfileActivity extends AppCompatActivity {
         userMap.put("longitude", userLng);
         if (profileUrl != null) userMap.put("profilePhoto", profileUrl);
 
-        dbRef.updateChildren(userMap)
-                .addOnSuccessListener(aVoid -> {
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    if (user != null && !password.isEmpty()) {
-                        user.updatePassword(password)
-                                .addOnSuccessListener(aVoid1 -> Toast.makeText(this, "Profile & Password updated!", Toast.LENGTH_SHORT).show())
-                                .addOnFailureListener(e -> Toast.makeText(this, "Password update failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
-                    } else {
-                        Toast.makeText(this, "Profile updated!", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(e -> Log.e("UpdateProfile", "Update failed", e));
+        dbRef.updateChildren(userMap).addOnSuccessListener(aVoid -> {
+            FirebaseUser user = mAuth.getCurrentUser();
+            if (user != null && !password.isEmpty()) {
+                user.updatePassword(password).addOnSuccessListener(aVoid1 ->
+                        Toast.makeText(this, "Profile & Password updated!", Toast.LENGTH_SHORT).show());
+            } else {
+                Toast.makeText(this, "Profile updated!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void confirmDeleteAccount() {
@@ -254,9 +279,10 @@ public class UpdateProfileActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user == null) return;
 
-        // Re-authenticate user before deletion
-        AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), "USER_PASSWORD_HERE"); // Replace with actual password
+        // **TODO**: Ask user for password via dialog before re-authentication
+        String userPassword = "USER_PASSWORD_HERE"; // Replace dynamically
 
+        AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), userPassword);
         user.reauthenticate(credential).addOnCompleteListener(reauthTask -> {
             if (reauthTask.isSuccessful()) {
                 dbRef.removeValue().addOnCompleteListener(task -> {
@@ -264,27 +290,24 @@ public class UpdateProfileActivity extends AppCompatActivity {
                         user.delete().addOnCompleteListener(deleteTask -> {
                             if (deleteTask.isSuccessful()) {
                                 Toast.makeText(this, "Account deleted", Toast.LENGTH_SHORT).show();
-
-                                Intent intent = new Intent(UpdateProfileActivity.this, MainMenuActivity.class);
-                                startActivity(intent);
+                                startActivity(new Intent(this, MainMenuActivity.class));
+                                finish();
                             } else {
-                                Toast.makeText(this, "Failed to delete user: " + deleteTask.getException().getMessage(),
-                                        Toast.LENGTH_LONG).show();
+                                Toast.makeText(this, "Failed to delete user", Toast.LENGTH_SHORT).show();
                             }
                         });
-                    } else {
-                        Toast.makeText(this, "Failed to remove data: " + task.getException().getMessage(),
-                                Toast.LENGTH_LONG).show();
                     }
                 });
             } else {
-                Toast.makeText(this, "Re-authentication failed: " + reauthTask.getException().getMessage(),
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Re-authentication failed", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-
+    private void openActivity(Class<?> cls) {
+        startActivity(new Intent(this, cls));
+        finish();
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
