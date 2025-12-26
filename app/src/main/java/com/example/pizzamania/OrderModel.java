@@ -27,19 +27,19 @@ public class OrderModel {
     public OrderModel(String orderID, String userUid, String deliveryAddress,double latitude,double longitude,String nearestBranch,
                       double subtotal, double deliveryFee, double totalFee,
                       String paymentMethod, String orderStatus, String orderDate, String orderTime) {
-        this.orderId = orderID;
-        this.userUid = userUid;
-        this.deliveryAddress = deliveryAddress;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.nearestBranch = nearestBranch;
-        this.subtotal = subtotal;
-        this.deliveryFee = deliveryFee;
-        this.totalFee = totalFee;
-        this.paymentMethod = paymentMethod;
-        this.orderStatus = orderStatus;
-        this.orderDate = orderDate;
-        this.orderTime = orderTime;
+                        this.orderId = orderID;
+                        this.userUid = userUid;
+                        this.deliveryAddress = deliveryAddress;
+                        this.latitude = latitude;
+                        this.longitude = longitude;
+                        this.nearestBranch = nearestBranch;
+                        this.subtotal = subtotal;
+                        this.deliveryFee = deliveryFee;
+                        this.totalFee = totalFee;
+                        this.paymentMethod = paymentMethod;
+                        this.orderStatus = orderStatus;
+                        this.orderDate = orderDate;
+                        this.orderTime = orderTime;
     }
 
     public void setOrderId(String orderId) { this.orderId = orderId; }
