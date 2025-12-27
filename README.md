@@ -55,10 +55,10 @@ PizzaMania integrates the **PayHere Payment Gateway** to enable **secure and rel
 
 ### PayHere Integration Highlights
 
-- 💳 Supports **Visa / MasterCard** payments  
+- 💳 Supports Visa / MasterCard payments  
 - 🔐 Secure transaction handling via PayHere APIs  
 - 📲 Mobile-friendly checkout flow  
-- 🧪 Uses **sandbox mode** for academic testing and demonstrations  
+- 🧪 Uses sandbox mode for academic testing and demonstrations  
 
 This integration helps simulate **real-world e-commerce payment workflows**, bridging academic learning with industry-relevant practices.
 
@@ -73,9 +73,9 @@ The administrative functionality of the PizzaMania platform is implemented in a 
 - Operational and administrative data handling  
 
 🔗 **Admin Mobile App Repository:**  
-👉 *(Add your admin app GitHub link here)*  
+https://github.com/Sahas9923/pizzamania-admin-app
 
-This separation follows **industry-standard Android architecture best practices**.
+> This separation follows industry-standard Android architecture best practices.
 
 ---
 
@@ -87,7 +87,7 @@ This separation follows **industry-standard Android architecture best practices*
 - Android SDK  
 - XML (UI Layouts)  
 - Google Maps APIs (location & map services)  
-- **PayHere Payment Gateway (Card Payments)**  
+- PayHere Payment Gateway (Card Payments) 
 
 ### Backend & Data Services
 - REST APIs  
@@ -107,7 +107,8 @@ pizza-mania-mobile/
 │   └── AndroidManifest.xml
 │
 ├── README.md
-└── build.gradle
+├── build.gradle
+├── project_report.pdf
 ```
 ---
 
@@ -133,14 +134,20 @@ Planned improvements include:
 
 ---
 
-## 📄 Reports & Screenshots (To Be Added)
+## 📄 Reports & Screenshots
 
-Future updates will include:
+This repository includes supporting academic materials related to the project.
 
-- Project documentation  
-- Application screenshots  
-- Visual demonstrations of key workflows  
-- Supporting materials for academic evaluation  
+### 📄 Project Report
+- The complete academic project report is available in this repository as **Project_Report.pdf**
+- The report includes:
+  - System overview and objectives  
+  - Architecture and design decisions  
+  - Database and application workflows  
+  - **Application screenshots and UI walkthroughs**  
+  - Implementation details and explanations  
+
+> All application screenshots and visual demonstrations are documented within the project report.
 
 ---
 
@@ -156,5 +163,5 @@ Future updates will include:
 
 ## 📜 License
 
-This project is released **strictly for educational and academic purposes**.
+This project is released for educational and academic purposes.
 
