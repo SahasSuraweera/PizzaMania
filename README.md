@@ -108,7 +108,7 @@ pizza-mania-mobile/
 │
 ├── README.md
 ├── build.gradle
-├── project_report.pdf
+└── project_report.pdf
 ```
 ---
 
